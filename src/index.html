@@ -5,32 +5,84 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      .messenger { background: #000; padding: 3px; position: fixed; bottom: 0; width: 80%; }
+      .control-box { position: fixed; bottom: 55px; width: 80%; padding: 3px; }
+      .messenger input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      .messenger button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
-    </style>    
+      .margin-left { margin-left: 5px; margin-right: 5px; }
+    </style>   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> 
   </head>
   <body>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+    <form action="" class="container">
+      <div class="control-box">
+          <div class="row">
+              <label for="username" class="margin-left col-2" > Username: </label>      
+              <input type="text" id="username" class="col-2" /> 
+              
+            </div>
+            <div class="row">         
+              <label for="usertype" class="margin-left col-2" > User Type: </label>      
+              <input type="text" id="usertype" class="col-2" />                                       
+          </div>
+          <div class="row">        
+              <label for="scopeid" class="margin-left col-2" > Scope Id: </label>      
+              <input type="text" id="scopeid" class="col-2" />                         
+              <button class="btn primary margin-left" id="btnConnect"> Connect </button>
+              <button class="btn secondary margin-left" id="btnJoin"> Join Room </button> 
+              <button class="btn secondary margin-left" id="btnLeave"> Leave Room </button>   
+          </div>                        
+          </div> 
+      </div>
+      
+      <div class="messenger">
+        <input id="m" autocomplete="off" />
+        <button class="btn primary" id="send">Send</button>     
+      </div>
     </form>
     
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
-        var socket = io();
-        $('form').submit(function(){
-          socket.emit('chat message', $('#m').val());
+        var socket = io('http://localhost:9090');
+
+        $('#btnConnect').click(function(){
+
+        });
+
+         $('#btnJoin').click(function(){
+            socket.emit('join', { 
+              action: 'join',
+              name: $('#username').val(), 
+              type: $('#usertype').val(), 
+              room: $('#scopeid').val()})
+              return false;
+        });
+
+        $('#btnLeave').click(function(){
+            socket.emit('leave', { 
+              action: 'leave',
+              name: $('#username').val(), 
+              type: $('#usertype').val(), 
+              room: $('#scopeid').val()})
+              return false;
+        });
+
+        $('#send').click(function(){
+          socket.send( { 
+            room: $('#scopeid').val(), 
+            data: $('#m').val()  } 
+          );
           $('#m').val('');
           return false;
         });
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
+        socket.on('message', function(msg){
+          $('#messages').append($('<li>').text(msg.data));
         });
       });
     </script>
