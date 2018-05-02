@@ -32,7 +32,7 @@
           <div class="row">        
               <label for="scopeid" class="margin-left col-2" > Scope Id: </label>      
               <input type="text" id="scopeid" class="col-2" />                         
-              <button class="btn primary margin-left" id="btnConnect"> Connect </button>
+              <button class="btn primary margin-left" id="btnGetusers"> Get Users </button>
               <button class="btn secondary margin-left" id="btnJoin"> Join Room </button> 
               <button class="btn secondary margin-left" id="btnLeave"> Leave Room </button>   
           </div>                        
@@ -51,8 +51,13 @@
       $(function () {
         var socket = io('http://localhost:9090');
 
-        $('#btnConnect').click(function(){
-
+        $('#btnGetusers').click(function(){
+          socket.emit('getusers', { 
+              action: 'getusers',
+              name: $('#username').val(), 
+              type: $('#usertype').val(), 
+              room: $('#scopeid').val()})
+              return false;
         });
 
          $('#btnJoin').click(function(){
