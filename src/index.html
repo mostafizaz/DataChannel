@@ -49,7 +49,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
-        var socket = io('http://localhost:9090');
+        var socket = io('localhost:9090');
 
         $('#btnGetusers').click(function(){
           socket.emit('getusers', { 
